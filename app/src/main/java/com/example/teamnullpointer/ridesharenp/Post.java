@@ -1,6 +1,8 @@
 package com.example.teamnullpointer.ridesharenp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -82,7 +84,6 @@ public class Post extends AppCompatActivity {
         post.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startBackgroundTask();
-                startActivity(new Intent(ctx, CenteralHub.class));
             }
 
         });
@@ -141,15 +142,31 @@ public class Post extends AppCompatActivity {
 
         int selectedId = rd.getCheckedRadioButtonId();
         chosenButton = (RadioButton) findViewById(selectedId);
-        String rdtype = chosenButton.getText().toString();
-        getEmail();
+        if (selectedId != -1 && !(descript.getText().toString().equals(""))) {
+            String rdtype = chosenButton.getText().toString();
+            String method = "post";
 
-        String method = "post";
-        MYSQLBackgroundTask backgroundTask = new MYSQLBackgroundTask(this);
-        backgroundTask.execute(method,description,rdtype,emailToDB);
+            getEmail();
+            MYSQLBackgroundTask backgroundTask = new MYSQLBackgroundTask(this);
+            backgroundTask.execute(method,description,rdtype,emailToDB);
+            finish();
+            startActivity(new Intent(ctx, CenteralHub.class));
+        } else {
 
-        finish();
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(Post.this);
+            builder1.setMessage("-Please Choose to post as a \tDRIVER or RIDER\n\n" +
+                    "-Enter a Description");
+            builder1.setCancelable(true);
+            builder1.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
 
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+        }
     }
 
     private void setupChannel(){

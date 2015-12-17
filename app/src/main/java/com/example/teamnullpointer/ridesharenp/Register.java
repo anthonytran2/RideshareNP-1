@@ -207,7 +207,6 @@ public class Register extends AppCompatActivity {
             theGender = chosenButton.getText().toString();
         }
 
-
         selectedId = ssm.getCheckedRadioButtonId();
         chosenButton = (RadioButton) findViewById(selectedId);
         if (selectedId != -1) {

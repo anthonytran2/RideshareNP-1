@@ -139,7 +139,16 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void connectCallback(String channel, Object message) {
                     super.connectCallback(channel, message);
-                    Log.d("connectCallback", "message " + message);
+
+                    pubnub.history(host, 10, true, new Callback() {
+                        @Override
+                        public void successCallback(String channel, Object message) {
+                            super.successCallback(channel, message);
+                            Log.d("connectCallback", "message " + message);
+                        }
+                    });
+
+
                 }
 
                 @Override
@@ -237,20 +246,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.logout, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.logout) {
-            //callback.loginActivity(1);
-            //sharedPreferences.edit().remove("username").apply();
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public void onClick(View view) {

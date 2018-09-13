@@ -1,4 +1,4 @@
-package adapter;
+package PubNub_Chat;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

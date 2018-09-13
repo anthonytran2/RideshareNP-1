@@ -11,8 +11,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back"
-        android:id="@+id/backbutid"
+        android:text="Home"
+        android:id="@+id/homebutid"
         android:background="#c3b174"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -26,8 +26,8 @@
         android:id="@+id/mapbutid"
         android:background="#c3b174"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/backbutid"
-        android:layout_toEndOf="@+id/backbutid" />
+        android:layout_toRightOf="@+id/homebutid"
+        android:layout_toEndOf="@+id/homebutid" />
 
 
     <Button

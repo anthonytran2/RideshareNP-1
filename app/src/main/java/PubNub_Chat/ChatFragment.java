@@ -1,6 +1,7 @@
 
-package fragment;
+package PubNub_Chat;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,15 +13,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.teamnullpointer.ridesharenp.CenteralHub;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
@@ -31,13 +33,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
-import adapter.ChatAdapter;
-import callback.CustomCallback;
-import keys.PubnubKeys;
-import pojo.Message;
 import com.example.teamnullpointer.ridesharenp.R;
 
 /**
@@ -46,20 +44,23 @@ import com.example.teamnullpointer.ridesharenp.R;
  */
 public class ChatFragment extends Fragment implements View.OnClickListener {
 
-    String TAG = "ChatFragment";
-    SharedPreferences sharedPreferences;
-    CustomCallback callback;
-    Context context;
-    Pubnub pubnub;
-    EditText chatMessage;
-    Button send;
-    RecyclerView chatList;
-    ArrayList<String> chatMessageList;
-    ChatAdapter chatAdapter;
-    Gson gson;
-    JSONObject messageObject;
-    String username, host, hostusername;
-    Button backbut, mapbut, usersbut, reportbut;
+    private String TAG = "ChatFragment";
+    private SharedPreferences sharedPreferences;
+    private Context context;
+    private Pubnub pubnub;
+    private EditText chatMessage;
+    private Button send;
+    private RecyclerView chatList;
+    private ArrayList<String> chatMessageList;
+    private ChatAdapter chatAdapter;
+    private Gson gson;
+    private JSONObject messageObject;
+    private String username, host, hostusername;
+    private Button homebut, mapbut, usersbut, reportbut;
+
+    private GoogleApiClient client;
+
+
 
     @Nullable
     @Override
@@ -69,7 +70,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
 
         context = getActivity();
-        callback = (CustomCallback) context;
         sharedPreferences = context.getSharedPreferences("details", Context.MODE_PRIVATE);
         gson = new Gson();
 
@@ -91,15 +91,19 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         send = (Button) view.findViewById(R.id.send);
         send.setOnClickListener(this);
 
-        backbut = (Button) view.findViewById(R.id.backbutid);
+        homebut = (Button) view.findViewById(R.id.homebutid);
         mapbut = (Button) view.findViewById(R.id.mapbutid);
         usersbut = (Button) view.findViewById(R.id.viewuserbutid);
         reportbut = (Button) view.findViewById(R.id.reportbutid);
 
-        backbut.setText("Back");
+        homebut.setText("home");
         mapbut.setText("Map");
         usersbut.setText("Users");
         reportbut.setText("Report");
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(context).addApi(AppIndex.API).build();
 
         clicks();
 
@@ -122,12 +126,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                             chatList.scrollToPosition(chatMessageList.size() - 1);
                         }
                     });
-                    Log.d("successCallback", "message " + message);
+                    Log.d("successCallback", "message YOOOOP" + message);
                 }
 
                 @Override
                 public void successCallback(String channel, Object message, String timetoken) {
                     super.successCallback(channel, message, timetoken);
+                    Log.d("successCallBack", "message" + message);
                 }
 
                 @Override
@@ -139,16 +144,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void connectCallback(String channel, Object message) {
                     super.connectCallback(channel, message);
-
-                    pubnub.history(host, 10, true, new Callback() {
-                        @Override
-                        public void successCallback(String channel, Object message) {
-                            super.successCallback(channel, message);
-                            Log.d("connectCallback", "message " + message);
-                        }
-                    });
-
-
+                    Log.d("connectCallback", "message SUBSCRIBE" + message);
                 }
 
                 @Override
@@ -167,73 +163,81 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
             Log.d(TAG, pe.toString());
         }
 
+
+        pubnub.history(host, 100, true, new Callback() {
+            @Override
+            public void successCallback(String channel, Object message) {
+                super.successCallback(channel, message);
+                Log.d("connectCallback", "message REJOIN" + message);
+
+                String u = "";
+                String m = "";
+
+                final List<Message> chatMsgs = new ArrayList<Message>();
+
+                JSONArray mJsonArray = null;
+                try {
+                    mJsonArray = (JSONArray) message;
+
+                    for (int i = 0; i < mJsonArray.length(); i++) {
+                        JSONArray ia = mJsonArray.optJSONArray(i);
+                        for(int j = 0; j < ia.length(); j++) {
+                            JSONObject jo = ia.getJSONObject(j);
+                            m = jo.get("message").toString();
+                            u = jo.get("username").toString();
+
+                            String msg = gson.toJson(new Message(u, m));
+                            chatMessageList.add(msg);
+
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //   chatAdapter.notifyItemInserted(chatMessageList.size() - 1); //BUGGED WITH RECYCLE VIEW
+                                    chatAdapter.notifyDataSetChanged();
+                                    chatList.scrollToPosition(chatMessageList.size() - 1);
+                                }
+                            });
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+
         return view;
 
     }
+
+    protected void sendEmail() {
+        //Log.i("Send email", "");
+        String[] TO = {"NullPointerException@gmail.com"};
+        String[] CC = {""};
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Your subject");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Email message goes here");
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            //Log.i("Finished sending email...", "");
+        } catch (ActivityNotFoundException ex) {
+            Toast.makeText(context, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void clicks() {
 
         mapbut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //startActivity(new Intent(ctx, Maps.class));
-
-                /*class startBackgroundTask extends AsyncTask<Void, Void, String> {
-
-                    String json_url;
-                    String json_string;
-                    @Override
-                    protected void onPreExecute() {
-                        //json_url = "http://athena.ecs.csus.edu/~wonge/rideshare/json_get_data_rider.php";
-                    }
-
-                    @Override
-                    protected String doInBackground(Void... voids) {
-                        String JSON_STRING;
-                        try {
-                            URL url = new URL(json_url);
-                            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-                            InputStream inputStream = httpURLConnection.getInputStream();
-                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                            StringBuilder stringBuilder = new StringBuilder();
-                            while ((JSON_STRING = bufferedReader.readLine()) != null) {
-                                stringBuilder.append(JSON_STRING+"\n");
-                            }
-                            bufferedReader.close();
-                            inputStream.close();
-                            httpURLConnection.disconnect();
-                            return stringBuilder.toString().trim();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void onProgressUpdate (Void...values){
-                        super.onProgressUpdate(values);
-                    }
-
-                    @Override
-                    protected void onPostExecute (String result){
-                        // TextView textView = (TextView) findViewById(R.id.textView);
-                        // textView.setText(result);
-                        json_string = result;
-                        //Intent intent = new Intent(ctx, ShowRiderPosts.class);
-                        //intent.putExtra("json_data",json_string);
-                        //startActivity(intent);
-
-
-                        String zip1 = "95624";
-                        String zip2 = "95824";
-
-                        String uri = "https://www.google.com/maps/dir/" + zip1 + "/" + zip2;
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                        startActivity(intent);
-                    }
-                }*/
-
-
                 String zip1 = "95624";
                 String zip2 = "95824";
 
@@ -241,6 +245,21 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(intent);
 
+            }
+
+        });
+
+
+        homebut.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), CenteralHub.class));
+            }
+
+        });
+
+        reportbut.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendEmail();
             }
 
         });
@@ -276,6 +295,47 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(context, "Please enter message", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "CenteralHub Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.teamnullpointer.ridesharenp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "CenteralHub Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.teamnullpointer.ridesharenp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 
     @Override

@@ -27,7 +27,7 @@ public class Login extends AppCompatActivity {
     //Textfields & buttons
     private Button loginbut, regibut;
     private EditText emaillogintxt, passtxt;
-    private Context mContext;
+    private Context ctx;
     private CheckBox remembermebox;
     private DataBaseOperation mydb; //Local DB
 
@@ -35,8 +35,9 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         setTitle("Rideshare");
-        mContext = this.getApplicationContext(); //Gets context for start new activities.
+        ctx = this.getApplicationContext(); //Gets context for start new activities.
         mydb = new DataBaseOperation(this);
 
         loginRun();
@@ -76,7 +77,7 @@ public class Login extends AppCompatActivity {
 
         regibut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(mContext, Register.class));
+                startActivity(new Intent(ctx, Register.class));
             }
         });
 

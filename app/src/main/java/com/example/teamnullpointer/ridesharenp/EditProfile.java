@@ -77,7 +77,11 @@ public class EditProfile extends AppCompatActivity {
 
 
     //Retrieve database info
-    private String profile_url = "http://athena.ecs.csus.edu/~wonge/rideshare/json_get_data_profile.php";
+    private String profile_url = "http://athena.ecs.csus.edu/~trana/rideshare/json_get_data_profile.php";
+
+    //LOCAL server url
+    //private String profile_url = "http://10.0.2.2/Rideshare/json_get_data_profile.php";
+
 
     private String json_string;
     private JSONObject jsonObject;

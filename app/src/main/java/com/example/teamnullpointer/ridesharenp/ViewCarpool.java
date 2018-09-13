@@ -12,15 +12,19 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class ViewCarpool extends AppCompatActivity {
-    private Button mapbut, viewprofilebut;
+    private Button mapbut, viewprofilebut, msgbut;
+    private TextView titletxt;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_carpool);
+        setTitle("Carpool");
 
         run();
 
@@ -29,8 +33,12 @@ public class ViewCarpool extends AppCompatActivity {
     private void layout(){
         mapbut = (Button) findViewById(R.id.mapbutid);
         viewprofilebut = (Button) findViewById(R.id.viewprofilebutid);
+        msgbut = (Button) findViewById(R.id.msgbutid);
+        titletxt = (TextView) findViewById(R.id.titleid);
 
+        titletxt.setText("Eric's Carpool Group");
         mapbut.setText("Map");
+        msgbut.setText("Message");
         viewprofilebut.setText("View Profile");
 
     }

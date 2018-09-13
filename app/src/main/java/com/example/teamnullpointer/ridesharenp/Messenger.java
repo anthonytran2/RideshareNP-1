@@ -6,13 +6,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.teamnullpointer.ridesharenp.R;
+import PubNub_Chat.ChatFragment;
 
-import callback.CustomCallback;
-import fragment.ChatFragment;
-import fragment.LoginFragment;
-
-public class Messenger extends AppCompatActivity implements CustomCallback {
+public class Messenger extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     FragmentManager fragmentManager;
@@ -42,32 +38,10 @@ public class Messenger extends AppCompatActivity implements CustomCallback {
         sharedPreferences.edit().putString("hostEmail", hostEmail).apply();
         sharedPreferences.edit().putString("userName", userName).apply();
 
-        changeLogin();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, new ChatFragment(), "Chat");
+        fragmentTransaction.commit();
+
     }
 
-    public void changeLogin() {
-      /*  if (sharedPreferences.getString("username", null) == null) {
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container, new LoginFragment(), "Login");
-            fragmentTransaction.commit();
-        } else {
-
-        */  fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container, new ChatFragment(), "Chat");
-            fragmentTransaction.commit();
-       // }
-    }
-
-    @Override
-    public void loginActivity(int LOGIN_STATE) {
-        if (LOGIN_STATE == 0) {
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container, new ChatFragment(), "Chat");
-            fragmentTransaction.commit();
-        }/* else {
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container, new LoginFragment(), "Login");
-            fragmentTransaction.commit();
-        }*/
-    }
 }

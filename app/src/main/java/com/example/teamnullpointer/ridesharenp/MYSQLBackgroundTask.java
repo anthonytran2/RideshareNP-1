@@ -22,15 +22,32 @@ import java.net.URLEncoder;
 public class MYSQLBackgroundTask extends AsyncTask<String,Void,String> {
     private Context ctx;
 
+
     //MYSQL server url
-    private String reg_url =  "http://athena.ecs.csus.edu/~wonge/rideshare/register.php";
+    /*private String reg_url =  "http://athena.ecs.csus.edu/~wonge/rideshare/register.php";
     private String login_url = "http://athena.ecs.csus.edu/~wonge/rideshare/login.php";
     private String post_url = "http://athena.ecs.csus.edu/~wonge/rideshare/post.php";
     private String edit_url = "http://athena.ecs.csus.edu/~wonge/rideshare/edit.php";
+    */
 
+
+    private String reg_url =  "http://athena.ecs.csus.edu/~trana/rideshare/register.php";
+    private String login_url = "http://athena.ecs.csus.edu/~trana/rideshare/login.php";
+    private String post_url = "http://athena.ecs.csus.edu/~trana/rideshare/post.php";
+    private String edit_url = "http://athena.ecs.csus.edu/~trana/rideshare/edit.php";
+    private String delpost_url = "http://athena.ecs.csus.edu/~trana/rideshare/delpost.php";
+    private String delacc_url = "http://athena.ecs.csus.edu/~trana/rideshare/delacc.php";
+/*
     //LOCAL server url
-    //private String reg_url = "http://10.0.2.2/RideshareMysql/register.php";
-    //private String login_url= "http://10.0.2.2/RideshareMysql/login.php";
+    private String reg_url = "http://10.0.2.2/Rideshare/register.php";
+    private String login_url= "http://10.0.2.2/Rideshare/login.php";
+    private String post_url = "http://10.0.2.2/Rideshare/post.php";
+    private String edit_url = "http://10.0.2.2/Rideshare/edit.php";
+*/
+    //new
+    //private String fillpost_url = "http://10.0.2.2/Rideshare/fillpost.php";
+    //private String delpost_url = "http://10.0.2.2/Rideshare/delpost.php";
+
 
     MYSQLBackgroundTask(Context ctx){
         this.ctx= ctx;
@@ -232,7 +249,84 @@ public class MYSQLBackgroundTask extends AsyncTask<String,Void,String> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if(method.equals("Delete Post")){
+
+            String email = params[1];
+
+            try {
+                URL url = new URL(delpost_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream OS = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+                String data = URLEncoder.encode("Email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String response = "";
+                String line = "";
+                while((line = bufferedReader.readLine()) != null){
+                    response += line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                System.out.println("```" + response);
+                return response;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if(method.equals("Delete Account")){
+
+            String email = params[1];
+
+            try {
+                URL url = new URL(delacc_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream OS = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+                String data = URLEncoder.encode("Email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String response = "";
+                String line = "";
+                while((line = bufferedReader.readLine()) != null){
+                    response += line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                System.out.println("```" + response);
+                return response;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         return "fail";
     }
 
@@ -246,13 +340,22 @@ public class MYSQLBackgroundTask extends AsyncTask<String,Void,String> {
     protected void onPostExecute(String result) {
         if (result.equals("Registration Successful!")) {
             ctx.startActivity(new Intent(ctx, Login.class));
+            Toast.makeText(ctx, result,Toast.LENGTH_LONG).show();
         } else {
-            if(result.equals("Login Success")) {
+            if (result.equals("Login Success")) {
                 ctx.startActivity(new Intent(ctx, CenteralHub.class));
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+            } else if (result.equals("Delete Post Success")) {
+                Toast.makeText(ctx, "Delete Post Success", Toast.LENGTH_LONG).show();
+            }  else if (result.equals("Delete Account Success")) {
+                Toast.makeText(ctx, "Delete Account Success", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(ctx, result,Toast.LENGTH_LONG).show();
+                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                    System.out.println("=================== " + result);
+
             }
         }
 
     }
+    
 }

@@ -1,4 +1,4 @@
-package keys;
+package PubNub_Chat;
 
 /**
  * Created by Anjith Sasindran

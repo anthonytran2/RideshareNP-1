@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -44,18 +46,21 @@ public class ViewProfile extends AppCompatActivity {
 
     //Retieve these form database
     private String hostemailGet, firstnameGet, lastnameGet, specGet, genderGet, ssmGet, userName, hostuserName;
-    private float user_ratingGet = 5;
+    private float user_ratingGet = 4;
 
 
     //Retrieve database info
-    private String profile_url = "http://athena.ecs.csus.edu/~wonge/rideshare/json_get_data_profile.php";
+    private String profile_url = "http://athena.ecs.csus.edu/~trana/rideshare/json_get_data_profile.php";
+
+    //LOCAL server url
+    //private String profile_url = "http://10.0.2.2/Rideshare/json_get_data_profile.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
         ctx = getApplicationContext();
-        setTitle("Profile");
 
         //GET PROFILE DATA
         json_string = getIntent().getExtras().getString("json_data");
@@ -108,7 +113,7 @@ public class ViewProfile extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
+        setTitle(firstnameGet + " " + lastnameGet );
         registerRun();
 
     }
@@ -137,18 +142,20 @@ public class ViewProfile extends AppCompatActivity {
         MsgButton = (Button) findViewById(R.id.msgbutid);
 
         ratebar.setRating(user_ratingGet);
+        Drawable progress = ratebar.getProgressDrawable();
+        DrawableCompat.setTint(progress, Color.argb(255, 195, 177, 118));
 
         //TEST
         ArrayList<String> myStringArray1 = new ArrayList<String>();
-        myStringArray1.add("somethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomethingsomething");
-        myStringArray1.add("somethingsomethingsomethingsomethingsomethingsomethingsomethinggggggggggggggggggggggggg");
+        myStringArray1.add("Great driver!");
+        myStringArray1.add("On time every day");
+        myStringArray1.add("Flexible schedule");
+        myStringArray1.add("Nice car!");
+        myStringArray1.add("Doesn't smell");
+        myStringArray1.add("His car is very clean");
+        myStringArray1.add("His car has lots of room");
+        myStringArray1.add("A lot of room to carpool");
+        myStringArray1.add("Safe driver");
 
         ArrayAdapter adapter =  new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myStringArray1);
         comments.setAdapter(adapter);

@@ -1,4 +1,4 @@
-package pojo;
+package PubNub_Chat;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,5 +24,9 @@ public class Message {
 
     public String getMessage() {
         return message;
+    }
+
+    public String toString(){
+        return username + ": " + message;
     }
 }

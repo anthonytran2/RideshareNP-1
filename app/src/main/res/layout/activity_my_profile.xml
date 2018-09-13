@@ -46,6 +46,7 @@ tools:context="com.example.teamnullpointer.ridesharenp.MyProfile">
                 android:layout_height="wrap_content"
                 android:id="@+id/ratingbarid"
                 android:layout_below="@+id/usernametitleid"
+                android:isIndicator="true"
                 android:layout_centerHorizontal="true" />
 
             <TextView

@@ -1,6 +1,7 @@
-package adapter;
+package PubNub_Chat;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,7 +10,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import pojo.Message;
 import com.example.teamnullpointer.ridesharenp.R;
 
 /**
@@ -40,14 +40,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatViewHolder> {
     @Override
     public void onBindViewHolder(ChatViewHolder holder, int position) {
 
+
         message = chatMessageList.get(position);
         Message messageObject = gson.fromJson(message, Message.class);
 
         username = messageObject.getUsername();
         holder.username.setText(messageObject.getUsername());
-        if (!(username.equals(myUsername))) {
-            holder.chatHolder.setBackgroundColor(context.getResources().getColor(R.color.blue_200));
-        }
+        //if (!(username.equals(myUsername))) {
+            holder.chatHolder.setBackgroundColor(Color.argb(255,195,177,116));
+        //}
         holder.message.setText(messageObject.getMessage());
     }
 

@@ -74,8 +74,8 @@
             android:label="@string/title_activity_edit_profile" >
         </activity>
         <activity
-            android:name=".MyCarpools"
-            android:label="@string/title_activity_my_carpools" >
+            android:name=".MyPosts"
+            android:label="MyPosts" >
         </activity>
         <activity
             android:name=".ViewCarpool"
@@ -88,6 +88,14 @@
         <activity
             android:name=".MyProfile"
             android:label="@string/title_activity_my_profile" >
+        </activity>
+        <activity
+            android:name=".Search"
+            android:label="Search" >
+        </activity>
+        <activity
+            android:name=".Settings"
+            android:label="Settings" >
         </activity>
     </application>
 

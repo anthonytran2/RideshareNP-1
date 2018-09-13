@@ -265,7 +265,7 @@ public class Register extends AppCompatActivity {
             MYSQLBackgroundTask backgroundTask = new MYSQLBackgroundTask(this);
             int zip_int = Integer.parseInt(zipcode);
             backgroundTask.execute(method, emailLogin, passwordLogin, firstName, lastName,  zip_int+"", theGender, theSSM, theSpecial ,theBirthday);
-            //finish();
+            finish();
        }
 
     }
